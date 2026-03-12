@@ -11,8 +11,8 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
 
   return {
-    root: 'client',
-    base: '/',
+    root: '.', // Força raiz como o diretório atual
+    base: '/', // Importante para Vercel
     plugins: [
       react(),
       tailwindcss(),
@@ -38,27 +38,24 @@ export default defineConfig(({ mode }) => {
       outDir: "dist",
       emptyOutDir: true,
       rollupOptions: {
-        // Ativa logs verbosos para capturar o culpado exato na Vercel
+        // Ativa logs detalhados solicitados para depuração na Vercel
         onwarn(warning, warn) {
-          console.warn('=== ROLLUP WARNING ===');
-          console.warn('Código:', warning.code);
+          console.warn('=== ROLLUP WARNING DETALHADO ===');
+          console.warn('Código do warning:', warning.code);
           console.warn('Mensagem:', warning.message);
           if (warning.loc) {
-            console.warn(`Localização: ${warning.loc.file || 'desconhecido'}:${warning.loc.line}:${warning.loc.column}`);
+            console.warn(`Arquivo: ${warning.loc.file || 'desconhecido'}`);
+            console.warn(`Linha: ${warning.loc.line}:${warning.loc.column}`);
           }
-          if (warning.hook) {
-            console.warn('Hook:', warning.hook);
-          }
-          if (warning.exporter) {
-            console.warn('Exporter:', warning.exporter);
-          }
-          if (warning.importer) {
-            console.warn('Importer:', warning.importer);
-          }
-          console.warn('========================');
+          if (warning.exporter) console.warn('Exporter:', warning.exporter);
+          if (warning.importer) console.warn('Importer:', warning.importer);
+          console.warn('===========================');
           warn(warning);
         },
       },
+    },
+    server: {
+      open: true,
     },
   };
 });
