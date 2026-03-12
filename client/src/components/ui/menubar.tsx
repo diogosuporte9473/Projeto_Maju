@@ -1,9 +1,7 @@
 import * as React from "react";
 import * as MenubarPrimitive from "@radix-ui/react-menubar";
 import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react";
-
 import { cn } from "@/lib/utils";
-
 function Menubar({
   className,
   ...props
@@ -18,25 +16,21 @@ function Menubar({
     />
   );
 }
-
 function MenubarMenu({
   ...props
 }: any) {
   return <MenubarPrimitive.Menu {...props} />;
 }
-
 function MenubarGroup({
   ...props
 }: any) {
   return <MenubarPrimitive.Group {...props} />;
 }
-
 function MenubarPortal({
   ...props
 }: any) {
   return <MenubarPrimitive.Portal {...props} />;
 }
-
 function MenubarRadioGroup({
   ...props
 }: any) {
@@ -44,7 +38,6 @@ function MenubarRadioGroup({
     <MenubarPrimitive.RadioGroup {...props} />
   );
 }
-
 function MenubarTrigger({
   className,
   ...props
@@ -59,7 +52,6 @@ function MenubarTrigger({
     />
   );
 }
-
 function MenubarContent({
   className,
   align = "start",
@@ -82,7 +74,6 @@ function MenubarContent({
     </MenubarPortal>
   );
 }
-
 function MenubarItem({
   className,
   inset,
@@ -101,7 +92,6 @@ function MenubarItem({
     />
   );
 }
-
 function MenubarCheckboxItem({
   className,
   children,
@@ -126,7 +116,6 @@ function MenubarCheckboxItem({
     </MenubarPrimitive.CheckboxItem>
   );
 }
-
 function MenubarRadioItem({
   className,
   children,
@@ -149,7 +138,6 @@ function MenubarRadioItem({
     </MenubarPrimitive.RadioItem>
   );
 }
-
 function MenubarLabel({
   className,
   inset,
@@ -166,7 +154,6 @@ function MenubarLabel({
     />
   );
 }
-
 function MenubarSeparator({
   className,
   ...props
@@ -178,7 +165,6 @@ function MenubarSeparator({
     />
   );
 }
-
 function MenubarShortcut({
   className,
   ...props
@@ -193,13 +179,11 @@ function MenubarShortcut({
     />
   );
 }
-
 function MenubarSub({
   ...props
 }: any) {
   return <MenubarPrimitive.Sub {...props} />;
 }
-
 function MenubarSubTrigger({
   className,
   inset,
@@ -220,7 +204,6 @@ function MenubarSubTrigger({
     </MenubarPrimitive.SubTrigger>
   );
 }
-
 function MenubarSubContent({
   className,
   ...props
@@ -235,7 +218,6 @@ function MenubarSubContent({
     />
   );
 }
-
 export {
   Menubar,
   MenubarPortal,
