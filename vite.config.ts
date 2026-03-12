@@ -18,23 +18,42 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./client/src"),
+        "@shared": path.resolve(__dirname, "./shared"),
       },
     },
-    // Define fallbacks para evitar que o Rollup quebre se a variável estiver ausente
+    // Define fallbacks inteligentes: tenta VITE_, depois NEXT_PUBLIC_, depois a var pura
     define: {
-      'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(env.VITE_SUPABASE_URL || ''),
-      'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(env.VITE_SUPABASE_ANON_KEY || ''),
+      'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(
+        env.VITE_SUPABASE_URL || env.NEXT_PUBLIC_SUPABASE_URL || env.SUPABASE_URL || ''
+      ),
+      'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(
+        env.VITE_SUPABASE_ANON_KEY || env.NEXT_PUBLIC_SUPABASE_ANON_KEY || env.SUPABASE_ANON_KEY || ''
+      ),
+      'import.meta.env.VITE_APP_ENV': JSON.stringify(env.VITE_APP_ENV || 'production'),
+      'import.meta.env.VITE_API_URL': JSON.stringify(env.VITE_API_URL || ''),
     },
     build: {
       outDir: "dist",
       emptyOutDir: true,
       rollupOptions: {
-        // Ativa logs detalhados para identificar exatamente qual arquivo/variável causa o erro
+        // Ativa logs verbosos para capturar o culpado exato na Vercel
         onwarn(warning, warn) {
-          console.warn('Rollup Warning:', warning.message);
+          console.warn('=== ROLLUP WARNING ===');
+          console.warn('Código:', warning.code);
+          console.warn('Mensagem:', warning.message);
           if (warning.loc) {
-            console.warn(`File: ${warning.loc.file}:${warning.loc.line}:${warning.loc.column}`);
+            console.warn(`Localização: ${warning.loc.file || 'desconhecido'}:${warning.loc.line}:${warning.loc.column}`);
           }
+          if (warning.hook) {
+            console.warn('Hook:', warning.hook);
+          }
+          if (warning.exporter) {
+            console.warn('Exporter:', warning.exporter);
+          }
+          if (warning.importer) {
+            console.warn('Importer:', warning.importer);
+          }
+          console.warn('========================');
           warn(warning);
         },
       },
