@@ -19,7 +19,7 @@ import {
 import { DraggableCard } from "@/components/DraggableCard";
 
 export default function BoardView() {
-  const [, params] = useRoute("/board/:id");
+  const [, params] = useRoute<{ id: string }>("/board/:id");
   const boardId = params?.id ? parseInt(params.id) : null;
   const { user } = useAuth();
 
