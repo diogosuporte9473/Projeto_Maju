@@ -11,6 +11,8 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
 
   return {
+    root: 'client',
+    base: '/',
     plugins: [
       react(),
       tailwindcss(),
