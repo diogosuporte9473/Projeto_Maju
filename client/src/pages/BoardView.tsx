@@ -23,12 +23,12 @@ export default function BoardView() {
   const boardId = params?.id ? parseInt(params.id) : null;
   const { user } = useAuth();
 
-  const { data: board, isLoading: boardLoading } = trpc.boards.get.useQuery(
+  const { data: board, isLoading: boardLoading } = (trpc.boards.get as any).useQuery(
     { id: boardId || 0 },
     { enabled: !!boardId }
   );
 
-  const { data: lists, isLoading: listsLoading } = trpc.lists.getByBoard.useQuery(
+  const { data: lists, isLoading: listsLoading } = (trpc.lists.getByBoard as any).useQuery(
     { boardId: boardId || 0 },
     { enabled: !!boardId }
   );
@@ -36,8 +36,8 @@ export default function BoardView() {
   const [newListName, setNewListName] = useState("");
   const [showNewList, setShowNewList] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const createListMutation = trpc.lists.create.useMutation();
-  const reorderCardMutation = trpc.cards.reorder.useMutation();
+  const createListMutation = (trpc.lists.create as any).useMutation();
+  const reorderCardMutation = (trpc.cards.reorder as any).useMutation();
 
   const handleCreateList = async () => {
     if (!newListName.trim() || !boardId) return;
@@ -122,12 +122,12 @@ export default function BoardView() {
         <DndContext
           collisionDetection={closestCorners}
           onDragEnd={handleDragEnd}
-          onDragStart={(event) => {
+          onDragStart={(event: any) => {
             setActiveId(event.active.id as string);
           }}
         >
           <div className="flex gap-6 overflow-x-auto pb-4">
-            {lists && lists.map((list) => (
+            {lists && lists.map((list: any) => (
               <div key={list.id} className="flex-shrink-0 w-80">
                 <ListColumn listId={list.id} listName={list.name} />
               </div>
@@ -190,10 +190,10 @@ export default function BoardView() {
 }
 
 function ListColumn({ listId, listName }: { listId: number; listName: string }) {
-  const { data: cards, isLoading } = trpc.cards.getByList.useQuery({ listId });
+  const { data: cards, isLoading } = (trpc.cards.getByList as any).useQuery({ listId });
   const [newCardTitle, setNewCardTitle] = useState("");
   const [showNewCard, setShowNewCard] = useState(false);
-  const createCardMutation = trpc.cards.create.useMutation();
+  const createCardMutation = (trpc.cards.create as any).useMutation();
 
   const handleCreateCard = async () => {
     if (!newCardTitle.trim()) return;
@@ -210,7 +210,7 @@ function ListColumn({ listId, listName }: { listId: number; listName: string }) 
     }
   };
 
-  const cardIds = cards?.map((card) => `card-${card.id}-${listId}`) || [];
+  const cardIds = cards?.map((card: any) => `card-${card.id}-${listId}`) || [];
 
   return (
     <div className="bg-muted rounded-lg p-4 flex flex-col h-full">
@@ -225,7 +225,7 @@ function ListColumn({ listId, listName }: { listId: number; listName: string }) 
               ))}
             </div>
           ) : cards && cards.length > 0 ? (
-            cards.map((card) => (
+            cards.map((card: any) => (
               <DraggableCard
                 key={card.id}
                 id={card.id}

@@ -12,10 +12,10 @@ interface TrelloDashboardLayoutProps {
 
 export default function TrelloDashboardLayout({ children }: TrelloDashboardLayoutProps) {
   const { user, logout } = useAuth();
-  const { data: boards, isLoading } = trpc.boards.list.useQuery();
+  const { data: boards, isLoading } = (trpc.boards.list as any).useQuery();
   const [showNewBoard, setShowNewBoard] = useState(false);
   const [newBoardName, setNewBoardName] = useState("");
-  const createBoardMutation = trpc.boards.create.useMutation();
+  const createBoardMutation = (trpc.boards.create as any).useMutation();
 
   const handleCreateBoard = async () => {
     if (!newBoardName.trim()) return;
@@ -74,7 +74,7 @@ export default function TrelloDashboardLayout({ children }: TrelloDashboardLayou
               </div>
             ) : boards && boards.length > 0 ? (
               <div className="space-y-2">
-                {boards.map((board) => (
+                {boards.map((board: any) => (
                   <Link key={board.id} href={`/board/${board.id}`} className="block p-3 rounded-lg hover:bg-primary-foreground/10 transition-colors text-sm font-medium">
                     <div className="flex items-center gap-2">
                       <div

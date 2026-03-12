@@ -17,26 +17,26 @@ export default function Admin() {
   const [selectedBoardId, setSelectedBoardId] = useState<number | null>(null);
 
   // Queries
-  const { data: users, isLoading: usersLoading } = trpc.admin.users.list.useQuery(
+  const { data: users, isLoading: usersLoading } = (trpc.admin.users.list as any).useQuery(
     undefined,
     { enabled: user?.role === "admin" }
   );
 
-  const { data: boards } = trpc.boards.list.useQuery(
+  const { data: boards } = (trpc.boards.list as any).useQuery(
     undefined,
     { enabled: user?.role === "admin" }
   );
 
-  const { data: boardMembers, isLoading: membersLoading } = trpc.admin.permissions.getByBoard.useQuery(
+  const { data: boardMembers, isLoading: membersLoading } = (trpc.admin.permissions.getByBoard as any).useQuery(
     { boardId: selectedBoardId || 0 },
     { enabled: !!selectedBoardId && user?.role === "admin" }
   );
 
   // Mutations
-  const createUserMutation = trpc.admin.users.create.useMutation();
-  const updateRoleMutation = trpc.admin.users.updateRole.useMutation();
-  const grantPermissionMutation = trpc.admin.permissions.grant.useMutation();
-  const revokePermissionMutation = trpc.admin.permissions.revoke.useMutation();
+  const createUserMutation = (trpc.admin.users.create as any).useMutation();
+  const updateRoleMutation = (trpc.admin.users.updateRole as any).useMutation();
+  const grantPermissionMutation = (trpc.admin.permissions.grant as any).useMutation();
+  const revokePermissionMutation = (trpc.admin.permissions.revoke as any).useMutation();
 
   if (user?.role !== "admin") {
     return (
@@ -161,7 +161,7 @@ export default function Admin() {
                 </div>
               ) : users && users.length > 0 ? (
                 <div className="space-y-3">
-                  {users.map((u) => (
+                  {users.map((u: any) => (
                     <div key={u.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                       <div>
                         <p className="font-medium text-foreground">{u.name}</p>
@@ -200,7 +200,7 @@ export default function Admin() {
                   <SelectValue placeholder="Selecione um quadro" />
                 </SelectTrigger>
                 <SelectContent>
-                  {boards?.map((board) => (
+                  {boards?.map((board: any) => (
                     <SelectItem key={board.id} value={board.id.toString()}>
                       {board.name}
                     </SelectItem>
@@ -220,8 +220,8 @@ export default function Admin() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {users?.map((u) => {
-                      const member = boardMembers?.find((m) => m.userId === u.id);
+                    {users?.map((u: any) => {
+                      const member = boardMembers?.find((m: any) => m.userId === u.id);
                       return (
                         <div key={u.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                           <div>

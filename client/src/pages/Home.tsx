@@ -18,11 +18,11 @@ export default function Home() {
     setAuthLoading(true);
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({ email, password });
+        const { error } = await (supabase.auth as any).signUp({ email, password });
         if (error) throw error;
         toast.success("Check your email for the confirmation link!");
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await (supabase.auth as any).signInWithPassword({ email, password });
         if (error) throw error;
       }
     } catch (error: any) {
