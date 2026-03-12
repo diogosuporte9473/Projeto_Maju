@@ -8,7 +8,6 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  root: path.resolve(__dirname, "client"),
   plugins: [
     react(),
     tailwindcss(),
@@ -26,7 +25,7 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        index: path.resolve(__dirname, "client/index.html"),
+        main: path.resolve(__dirname, "client/index.html"),
       },
     },
   },
