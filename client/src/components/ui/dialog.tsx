@@ -108,8 +108,50 @@ const DialogDescription = React.forwardRef<
 ));
 DialogDescription.displayName = DialogPrimitive.Description.displayName;
 
+// --- Composition logic for Input handling ---
+
+const DialogCompositionContext = React.createContext<{
+  isComposing: boolean;
+  setComposing: (val: boolean) => void;
+  markCompositionEnd: () => void;
+  justEndedComposing: () => boolean;
+}>({
+  isComposing: false,
+  setComposing: () => {},
+  markCompositionEnd: () => {},
+  justEndedComposing: () => false,
+});
+
+const useDialogComposition = () => React.useContext(DialogCompositionContext);
+
+const DialogRoot = ({ ...props }: React.ComponentProps<typeof DialogPrimitive.Root>) => {
+  const [isComposing, setComposing] = React.useState(false);
+  const lastCompositionEnd = React.useRef(0);
+
+  const contextValue = React.useMemo(
+    () => ({
+      isComposing,
+      setComposing,
+      markCompositionEnd: () => {
+        lastCompositionEnd.current = Date.now();
+      },
+      justEndedComposing: () => {
+        // If composition ended less than 100ms ago, consider it "just ended"
+        return Date.now() - lastCompositionEnd.current < 100;
+      },
+    }),
+    [isComposing]
+  );
+
+  return (
+    <DialogCompositionContext.Provider value={contextValue}>
+      <DialogPrimitive.Root {...props} />
+    </DialogCompositionContext.Provider>
+  );
+};
+
 export {
-  Dialog,
+  DialogRoot as Dialog,
   DialogPortal,
   DialogOverlay,
   DialogTrigger,
@@ -119,4 +161,5 @@ export {
   DialogFooter,
   DialogTitle,
   DialogDescription,
+  useDialogComposition,
 };
