@@ -90,11 +90,12 @@ function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
     useFormField();
   return (
     <Slot
-      id={formItemId}
+}: React.ComponentProps<typeof LabelPrimitive.Root>) {
       aria-describedby={
         !error
           ? `${formDescriptionId}`
           : `${formDescriptionId} ${formMessageId}`
+      data-slot="form-label"
       }
       aria-invalid={!!error}
       {...props}
