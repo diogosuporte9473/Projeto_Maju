@@ -28,16 +28,15 @@ export async function setupVite(app: any, server: Server) {
     try {
       const clientTemplate = path.resolve(
         import.meta.dirname,
-        "../..",
-        "client",
+        "../../client",
         "index.html"
       );
 
       // always reload the index.html file from disk incase it changes
       let template = await fs.promises.readFile(clientTemplate, "utf-8");
       template = template.replace(
-        `src="/src/main.tsx"`,
-        `src="/src/main.tsx?v=${nanoid()}"`
+        "/src/main.tsx",
+        `/src/main.tsx?v=${nanoid()}`
       );
       const page = await vite.transformIndexHtml(url, template);
       res.status(200).set({ "Content-Type": "text/html" }).end(page);
@@ -52,7 +51,7 @@ export function serveStatic(app: any) {
   const distPath =
     process.env.NODE_ENV === "development"
       ? path.resolve(import.meta.dirname, "../..", "dist", "public")
-      : path.resolve(import.meta.dirname, "public");
+      : path.resolve(import.meta.dirname, "../../dist/public");
   if (!fs.existsSync(distPath)) {
     console.error(
       `Could not find the build directory: ${distPath}, make sure to build the client first`

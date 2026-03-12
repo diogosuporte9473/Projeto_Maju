@@ -45,7 +45,7 @@ export async function createExpressApp() {
   if (process.env.NODE_ENV === "development") {
     const { setupVite } = await import("./vite");
     await setupVite(app, server);
-  } else if (!process.env.VERCEL) {
+  } else {
     serveStatic(app);
   }
 

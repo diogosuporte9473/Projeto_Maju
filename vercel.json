@@ -6,8 +6,11 @@
       "destination": "/api/index.ts"
     },
     {
+      "handle": "filesystem"
+    },
+    {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "destination": "/api/index.ts"
     }
   ],
   "cleanUrls": true
