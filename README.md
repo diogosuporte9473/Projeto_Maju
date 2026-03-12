@@ -38,4 +38,6 @@ Para que o projeto funcione corretamente na Vercel, você precisa configurar as 
 ```bash
 pnpm build
 ```
-O build gera os arquivos estáticos do cliente em `dist/public` e o servidor bundle em `dist/index.js`.
+O build gera os arquivos estáticos do cliente em `dist/` e o servidor bundle em `dist/index.js`.
+
+Para o deploy na Vercel, o script `vercel-build` é utilizado, gerando apenas os arquivos estáticos necessários para o frontend, enquanto as funções da API são gerenciadas automaticamente pelo handler em `api/index.ts`.
