@@ -1,8 +1,12 @@
-import { useMemo } from "react";
-import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
+"use client"
+
+import * as React from "react"
+import { useMemo } from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+import { cn } from "@/lib/utils"
+import { Label } from "@/components/ui/label"
+import { Separator } from "@/components/ui/separator"
+
 function FieldSet({ className, ...props }: React.ComponentProps<"fieldset">) {
   return (
     <fieldset
@@ -13,8 +17,9 @@ function FieldSet({ className, ...props }: React.ComponentProps<"fieldset">) {
       )}
       {...props}
     />
-  );
+  )
 }
+
 function FieldLegend({
   className,
   variant = "legend",
@@ -31,8 +36,9 @@ function FieldLegend({
       )}
       {...props}
     />
-  );
+  )
 }
+
 function FieldGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -42,8 +48,9 @@ function FieldGroup({ className, ...props }: React.ComponentProps<"div">) {
       )}
       {...props}
     />
-  );
+  )
 }
+
 const fieldVariants = cva(
   "group/field flex w-full gap-3 data-[invalid=true]:text-destructive",
   {
@@ -66,7 +73,8 @@ const fieldVariants = cva(
       orientation: "vertical",
     },
   }
-);
+)
+
 function Field({
   className,
   orientation = "vertical",
@@ -79,8 +87,9 @@ function Field({
       className={cn(fieldVariants({ orientation }), className)}
       {...props}
     />
-  );
+  )
 }
+
 function FieldContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -90,12 +99,13 @@ function FieldContent({ className, ...props }: React.ComponentProps<"div">) {
       )}
       {...props}
     />
-  );
+  )
 }
+
 function FieldLabel({
   className,
   ...props
-}: any) {
+}: React.ComponentProps<typeof Label>) {
   return (
     <Label
       className={cn(
@@ -106,20 +116,9 @@ function FieldLabel({
       )}
       {...props}
     />
-  );
+  )
 }
-}: React.ComponentProps<typeof Label>) {
-  return (
-    <div
-      data-slot="field-label"
-      className={cn(
-        "flex w-fit items-center gap-2 text-sm leading-snug font-medium group-data-[disabled=true]/field:opacity-50",
-        className
-      )}
-      {...props}
-    />
-  );
-}
+
 function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
   return (
     <p
@@ -131,8 +130,9 @@ function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
       )}
       {...props}
     />
-  );
+  )
 }
+
 function FieldSeparator({
   children,
   className,
@@ -158,8 +158,9 @@ function FieldSeparator({
         </span>
       )}
     </div>
-  );
+  )
 }
+
 function FieldError({
   className,
   children,
@@ -170,13 +171,13 @@ function FieldError({
 }) {
   const content = useMemo(() => {
     if (children) {
-      return children;
+      return children
     }
     if (!errors) {
-      return null;
+      return null
     }
     if (errors?.length === 1 && errors[0]?.message) {
-      return errors[0].message;
+      return errors[0].message
     }
     return (
       <ul className="ml-4 flex list-disc flex-col gap-1">
@@ -185,11 +186,13 @@ function FieldError({
             error?.message && <li key={index}>{error.message}</li>
         )}
       </ul>
-    );
-  }, [children, errors]);
+    )
+  }, [children, errors])
+
   if (!content) {
-    return null;
+    return null
   }
+
   return (
     <div
       role="alert"
@@ -198,8 +201,20 @@ function FieldError({
     >
       {content}
     </div>
-  );
+  )
 }
+
+const FieldTitle = ({ className, ...props }: React.ComponentProps<"div">) => (
+  <div
+    data-slot="field-title"
+    className={cn(
+      "flex w-fit items-center gap-2 text-sm leading-snug font-medium group-data-[disabled=true]/field:opacity-50",
+      className
+    )}
+    {...props}
+  />
+)
+
 export {
   Field,
   FieldLabel,
@@ -211,4 +226,4 @@ export {
   FieldSet,
   FieldContent,
   FieldTitle,
-};
+}
