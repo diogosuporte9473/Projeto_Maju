@@ -5,7 +5,9 @@ import { cn } from "@/lib/utils";
 function Checkbox({
   className,
   ...props
-}: React.ComponentProps<typeof CheckboxPrimitive.Root>) {
+}: React.ComponentProps<typeof CheckboxPrimitive.Root> & {
+  className?: string;
+}) {
   return (
     <CheckboxPrimitive.Root
       className={cn(
