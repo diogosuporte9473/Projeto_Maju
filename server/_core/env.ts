@@ -12,4 +12,6 @@ export const ENV = {
   isProduction: process.env.NODE_ENV === "production",
   supabaseUrl: getEnv("VITE_SUPABASE_URL"),
   supabaseServiceKey: getEnv("SUPABASE_SERVICE_ROLE_KEY"),
+  forgeApiUrl: getEnv("VITE_FRONTEND_FORGE_API_URL"),
+  forgeApiKey: getEnv("VITE_FRONTEND_FORGE_API_KEY"),
 };
