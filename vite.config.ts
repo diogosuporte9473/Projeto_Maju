@@ -39,7 +39,7 @@ export default defineConfig(({ mode }) => {
       emptyOutDir: true,
       rollupOptions: {
         // Ativa logs detalhados solicitados para depuração na Vercel
-        onwarn(warning, warn) {
+        onwarn(warning: any, warn: any) {
           console.warn('=== ROLLUP WARNING DETALHADO ===');
           console.warn('Código do warning:', warning.code);
           console.warn('Mensagem:', warning.message);
