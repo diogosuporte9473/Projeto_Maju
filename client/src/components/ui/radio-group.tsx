@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 
 const RadioGroup = React.forwardRef<
   HTMLDivElement,
-  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root>
+  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root> & { className?: string }
 >(({ className, ...props }, ref) => {
   return (
     <RadioGroupPrimitive.Root
@@ -22,7 +22,7 @@ RadioGroup.displayName = RadioGroupPrimitive.Root.displayName
 
 const RadioGroupItem = React.forwardRef<
   HTMLButtonElement,
-  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item>
+  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item> & { className?: string }
 >(({ className, ...props }, ref) => {
   return (
     <RadioGroupPrimitive.Item
@@ -33,7 +33,7 @@ const RadioGroupItem = React.forwardRef<
       )}
       {...props}
     >
-      <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
+      <RadioGroupPrimitive.Indicator className="flex items-center justify-center" {...({} as any)}>
         <Circle className="h-2.5 w-2.5 fill-current text-current" />
       </RadioGroupPrimitive.Indicator>
     </RadioGroupPrimitive.Item>

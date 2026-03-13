@@ -171,12 +171,12 @@ export default function Admin() {
                         value={u.role}
                         onValueChange={(value) => handleUpdateRole(u.id, value as "admin" | "user")}
                       >
-                        <SelectTrigger className="w-32 bg-background border-border">
+                        <SelectTrigger className="w-32 bg-background border-border" {...({} as any)}>
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="user">Usuário</SelectItem>
-                          <SelectItem value="admin">Admin</SelectItem>
+                        <SelectContent {...({} as any)}>
+                          <SelectItem value="user" {...({} as any)}>Usuário</SelectItem>
+                          <SelectItem value="admin" {...({} as any)}>Admin</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -196,12 +196,12 @@ export default function Admin() {
                 value={selectedBoardId?.toString() || ""}
                 onValueChange={(value) => setSelectedBoardId(parseInt(value))}
               >
-                <SelectTrigger className="w-full bg-background border-border">
+                <SelectTrigger className="w-full bg-background border-border" {...({} as any)}>
                   <SelectValue placeholder="Selecione um quadro" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent {...({} as any)}>
                   {boards?.map((board: any) => (
-                    <SelectItem key={board.id} value={board.id.toString()}>
+                    <SelectItem key={board.id} value={board.id.toString()} {...({} as any)}>
                       {board.name}
                     </SelectItem>
                   ))}
@@ -237,13 +237,13 @@ export default function Admin() {
                                     handleGrantPermission(u.id, value as "viewer" | "editor" | "admin")
                                   }
                                 >
-                                  <SelectTrigger className="w-32 bg-background border-border">
+                                  <SelectTrigger className="w-32 bg-background border-border" {...({} as any)}>
                                     <SelectValue />
                                   </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="viewer">Visualizador</SelectItem>
-                                    <SelectItem value="editor">Editor</SelectItem>
-                                    <SelectItem value="admin">Admin</SelectItem>
+                                  <SelectContent {...({} as any)}>
+                                    <SelectItem value="viewer" {...({} as any)}>Visualizador</SelectItem>
+                                    <SelectItem value="editor" {...({} as any)}>Editor</SelectItem>
+                                    <SelectItem value="admin" {...({} as any)}>Admin</SelectItem>
                                   </SelectContent>
                                 </Select>
                                 <Button

@@ -31,7 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }, 5000);
 
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session } } = await (supabase.auth as any).getSession();
         setSession(session);
       } catch (error) {
         console.error("[Auth] Error getting session", error);
@@ -43,7 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     checkSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
+    const { data: { subscription } } = (supabase.auth as any).onAuthStateChange((_event: any, session: any) => {
       setSession(session);
       if (session) {
         utils.auth.me.invalidate();
@@ -57,11 +57,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     retry: false,
     refetchOnWindowFocus: false,
     enabled: !!session,
-  });
+  } as any);
 
   const logout = async () => {
     try {
-      await supabase.auth.signOut();
+      await (supabase.auth as any).signOut();
       utils.auth.me.setData(undefined, null);
       await utils.auth.me.invalidate();
       setSession(null);
