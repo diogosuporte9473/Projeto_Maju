@@ -57,9 +57,14 @@ export default function Settings() {
 }
 
 function ProfileSettings({ user }: { user: any }) {
+  const utils = trpc.useUtils();
   const [name, setName] = useState(user.name || "");
   const [email, setEmail] = useState(user.email || "");
-  const updateProfileMutation = (trpc.settings.updateProfile as any).useMutation();
+  const updateProfileMutation = (trpc.settings.updateProfile as any).useMutation({
+    onSuccess: () => {
+      utils.auth.me.invalidate();
+    },
+  });
 
   const handleUpdateProfile = async () => {
     if (!name.trim()) {
@@ -164,8 +169,13 @@ function ProfileSettings({ user }: { user: any }) {
 }
 
 function NotificationSettings() {
+  const utils = trpc.useUtils();
   const { data: preferences, isLoading } = (trpc.settings.getPreferences as any).useQuery();
-  const updatePrefsMutation = (trpc.settings.updatePreferences as any).useMutation();
+  const updatePrefsMutation = (trpc.settings.updatePreferences as any).useMutation({
+    onSuccess: () => {
+      utils.settings.getPreferences.invalidate();
+    },
+  });
 
   const [emailOnCardAssigned, setEmailOnCardAssigned] = useState(
     preferences?.emailOnCardAssigned ?? true

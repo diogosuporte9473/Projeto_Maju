@@ -36,8 +36,17 @@ export default function BoardView() {
   const [newListName, setNewListName] = useState("");
   const [showNewList, setShowNewList] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const createListMutation = (trpc.lists.create as any).useMutation();
-  const reorderCardMutation = (trpc.cards.reorder as any).useMutation();
+  const utils = trpc.useUtils();
+  const createListMutation = (trpc.lists.create as any).useMutation({
+    onSuccess: () => {
+      utils.lists.getByBoard.invalidate({ boardId: boardId || 0 });
+    },
+  });
+  const reorderCardMutation = (trpc.cards.reorder as any).useMutation({
+    onSuccess: () => {
+      utils.cards.getByList.invalidate();
+    },
+  });
 
   const handleCreateList = async () => {
     if (!newListName.trim() || !boardId) return;
@@ -190,10 +199,15 @@ export default function BoardView() {
 }
 
 function ListColumn({ listId, listName }: { listId: number; listName: string }) {
+  const utils = trpc.useUtils();
   const { data: cards, isLoading } = (trpc.cards.getByList as any).useQuery({ listId });
   const [newCardTitle, setNewCardTitle] = useState("");
   const [showNewCard, setShowNewCard] = useState(false);
-  const createCardMutation = (trpc.cards.create as any).useMutation();
+  const createCardMutation = (trpc.cards.create as any).useMutation({
+    onSuccess: () => {
+      utils.cards.getByList.invalidate({ listId });
+    },
+  });
 
   const handleCreateCard = async () => {
     if (!newCardTitle.trim()) return;

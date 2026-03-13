@@ -33,10 +33,19 @@ export default function Admin() {
   );
 
   // Mutations
-  const createUserMutation = (trpc.admin.users.create as any).useMutation();
-  const updateRoleMutation = (trpc.admin.users.updateRole as any).useMutation();
-  const grantPermissionMutation = (trpc.admin.permissions.grant as any).useMutation();
-  const revokePermissionMutation = (trpc.admin.permissions.revoke as any).useMutation();
+  const utils = trpc.useUtils();
+  const createUserMutation = (trpc.admin.users.create as any).useMutation({
+    onSuccess: () => utils.admin.users.list.invalidate(),
+  });
+  const updateRoleMutation = (trpc.admin.users.updateRole as any).useMutation({
+    onSuccess: () => utils.admin.users.list.invalidate(),
+  });
+  const grantPermissionMutation = (trpc.admin.permissions.grant as any).useMutation({
+    onSuccess: () => utils.admin.permissions.getByBoard.invalidate({ boardId: selectedBoardId || 0 }),
+  });
+  const revokePermissionMutation = (trpc.admin.permissions.revoke as any).useMutation({
+    onSuccess: () => utils.admin.permissions.getByBoard.invalidate({ boardId: selectedBoardId || 0 }),
+  });
 
   if (user?.role !== "admin") {
     return (

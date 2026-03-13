@@ -12,10 +12,15 @@ interface TrelloDashboardLayoutProps {
 
 export default function TrelloDashboardLayout({ children }: TrelloDashboardLayoutProps) {
   const { user, logout } = useAuth();
+  const utils = trpc.useUtils();
   const { data: boards, isLoading } = (trpc.boards.list as any).useQuery();
   const [showNewBoard, setShowNewBoard] = useState(false);
   const [newBoardName, setNewBoardName] = useState("");
-  const createBoardMutation = (trpc.boards.create as any).useMutation();
+  const createBoardMutation = (trpc.boards.create as any).useMutation({
+    onSuccess: () => {
+      utils.boards.list.invalidate();
+    },
+  });
 
   const handleCreateBoard = async () => {
     if (!newBoardName.trim()) return;
