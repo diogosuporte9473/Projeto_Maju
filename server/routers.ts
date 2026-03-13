@@ -1,6 +1,7 @@
 import { COOKIE_NAME } from "@shared/const";
 import { and } from "drizzle-orm";
 import { getSessionCookieOptions } from "./_core/cookies";
+import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -13,6 +14,19 @@ import {
   getListCards,
   getCardById,
   getMirroredCards,
+  getCardLabels,
+  addCardLabel,
+  deleteCardLabel,
+  getCardChecklists,
+  addCardChecklist,
+  updateCardChecklist,
+  deleteCardChecklist,
+  getCardCustomFields,
+  addCardCustomField,
+  updateCardCustomField,
+  deleteCardCustomField,
+  getProjectDate,
+  upsertProjectDate,
 } from "./db";
 import {
   boards,
@@ -24,11 +38,16 @@ import {
   notifications,
   userPreferences,
   users,
+  cardLabels,
+  cardChecklists,
+  cardCustomFields,
+  projectDates,
 } from "../drizzle/schema";
 import { getDb } from "./db";
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
+  system: systemRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
@@ -609,6 +628,115 @@ export const appRouter = router({
           return { success: true };
         }),
     }),
+  }),
+
+  // Labels router
+  labels: router({
+    list: protectedProcedure
+      .input(z.object({ cardId: z.number() }))
+      .query(async ({ input }) => {
+        return await getCardLabels(input.cardId);
+      }),
+    add: protectedProcedure
+      .input(z.object({ cardId: z.number(), label: z.string(), color: z.string().optional() }))
+      .mutation(async ({ input }) => {
+        return await addCardLabel(input.cardId, input.label, input.color);
+      }),
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        return await deleteCardLabel(input.id);
+      }),
+  }),
+
+  // Checklists router
+  checklists: router({
+    list: protectedProcedure
+      .input(z.object({ cardId: z.number() }))
+      .query(async ({ input }) => {
+        return await getCardChecklists(input.cardId);
+      }),
+    add: protectedProcedure
+      .input(z.object({ cardId: z.number(), title: z.string(), position: z.number().optional() }))
+      .mutation(async ({ input }) => {
+        return await addCardChecklist(input.cardId, input.title, input.position);
+      }),
+    update: protectedProcedure
+      .input(z.object({ id: z.number(), completed: z.boolean() }))
+      .mutation(async ({ input }) => {
+        return await updateCardChecklist(input.id, input.completed ? 1 : 0);
+      }),
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        return await deleteCardChecklist(input.id);
+      }),
+  }),
+
+  // Custom Fields router
+  customFields: router({
+    list: protectedProcedure
+      .input(z.object({ cardId: z.number() }))
+      .query(async ({ input }) => {
+        return await getCardCustomFields(input.cardId);
+      }),
+    add: protectedProcedure
+      .input(z.object({ 
+        cardId: z.number(), 
+        fieldName: z.string(), 
+        fieldValue: z.string(), 
+        fieldType: z.enum(["text", "select", "date", "number"]).optional() 
+      }))
+      .mutation(async ({ input }) => {
+        return await addCardCustomField(input.cardId, input.fieldName, input.fieldValue, input.fieldType);
+      }),
+    update: protectedProcedure
+      .input(z.object({ id: z.number(), fieldValue: z.string() }))
+      .mutation(async ({ input }) => {
+        return await updateCardCustomField(input.id, input.fieldValue);
+      }),
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        return await deleteCardCustomField(input.id);
+      }),
+  }),
+
+  // Project Dates router
+  projectDates: router({
+    get: protectedProcedure
+      .input(z.object({ cardId: z.number() }))
+      .query(async ({ input }) => {
+        return await getProjectDate(input.cardId);
+      }),
+    upsert: protectedProcedure
+      .input(z.object({ 
+        cardId: z.number(), 
+        startDate: z.date().optional(), 
+        endDate: z.date().optional() 
+      }))
+      .mutation(async ({ input }) => {
+        return await upsertProjectDate(input.cardId, input.startDate, input.endDate);
+      }),
+  }),
+
+  // Mirrors router
+  mirrors: router({
+    list: protectedProcedure
+      .input(z.object({ cardId: z.number() }))
+      .query(async ({ input }) => {
+        return await getMirroredCards(input.cardId);
+      }),
+    create: protectedProcedure
+      .input(z.object({ originalCardId: z.number(), mirrorCardId: z.number() }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+        return await db.insert(mirroredCards).values({
+          originalCardId: input.originalCardId,
+          mirrorCardId: input.mirrorCardId,
+        });
+      }),
   }),
 });
 
