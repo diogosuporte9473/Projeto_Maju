@@ -78,7 +78,7 @@ FormItem.displayName = "FormItem";
 
 const FormLabel = React.forwardRef<
   HTMLLabelElement,
-  React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
+  React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> & { className?: string }
 >(({ className, ...props }, ref) => {
   const { error, formItemId } = useFormField();
 
@@ -88,6 +88,7 @@ const FormLabel = React.forwardRef<
       className={cn(error && "text-destructive", className)}
       htmlFor={formItemId}
       {...props}
+      {...({} as any)}
     />
   );
 });

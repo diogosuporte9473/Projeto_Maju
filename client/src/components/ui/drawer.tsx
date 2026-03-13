@@ -32,6 +32,7 @@ const DrawerOverlay = React.forwardRef<
     ref={ref}
     className={cn("fixed inset-0 z-50 bg-black/80", className)}
     {...props}
+    {...({} as any)}
   />
 ))
 DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName
@@ -52,6 +53,7 @@ const DrawerContent = React.forwardRef<
         className
       )}
       {...props}
+      {...({} as any)}
     >
       <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" />
       {children}
@@ -88,7 +90,7 @@ const DrawerTitle = React.forwardRef<
     className?: string;
     children?: React.ReactNode;
   }
->(({ className, ...props }, ref) => (
+>(({ className, children, ...props }, ref) => (
   <DrawerPrimitive.Title
     ref={ref}
     className={cn(
@@ -96,7 +98,10 @@ const DrawerTitle = React.forwardRef<
       className
     )}
     {...props}
-  />
+    {...({} as any)}
+  >
+    {children}
+  </DrawerPrimitive.Title>
 ))
 DrawerTitle.displayName = DrawerPrimitive.Title.displayName
 
@@ -106,12 +111,15 @@ const DrawerDescription = React.forwardRef<
     className?: string;
     children?: React.ReactNode;
   }
->(({ className, ...props }, ref) => (
+>(({ className, children, ...props }, ref) => (
   <DrawerPrimitive.Description
     ref={ref}
     className={cn("text-sm text-muted-foreground", className)}
     {...props}
-  />
+    {...({} as any)}
+  >
+    {children}
+  </DrawerPrimitive.Description>
 ))
 DrawerDescription.displayName = DrawerPrimitive.Description.displayName
 

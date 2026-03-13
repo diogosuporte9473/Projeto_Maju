@@ -25,60 +25,60 @@ export default function CardDetailModal({
   const utils = trpc.useUtils();
 
   // Queries
-  const { data: labels, isLoading: isLoadingLabels } = trpc.labels.list.useQuery({ cardId }, { enabled: isOpen });
-  const { data: checklists, isLoading: isLoadingChecklists } = trpc.checklists.list.useQuery({ cardId }, { enabled: isOpen });
-  const { data: customFields, isLoading: isLoadingCustomFields } = trpc.customFields.list.useQuery({ cardId }, { enabled: isOpen });
-  const { data: projectDates, isLoading: isLoadingDates } = trpc.projectDates.get.useQuery({ cardId }, { enabled: isOpen });
+  const { data: labels, isLoading: isLoadingLabels } = (trpc.labels.list as any).useQuery({ cardId }, { enabled: isOpen });
+  const { data: checklists, isLoading: isLoadingChecklists } = (trpc.checklists.list as any).useQuery({ cardId }, { enabled: isOpen });
+  const { data: customFields, isLoading: isLoadingCustomFields } = (trpc.customFields.list as any).useQuery({ cardId }, { enabled: isOpen });
+  const { data: projectDates, isLoading: isLoadingDates } = (trpc.projectDates.get as any).useQuery({ cardId }, { enabled: isOpen });
 
   // Mutations
-  const addLabelMutation = trpc.labels.add.useMutation({
+  const addLabelMutation = (trpc.labels.add as any).useMutation({
     onSuccess: () => {
       utils.labels.list.invalidate({ cardId });
       toast.success("Etiqueta adicionada");
     },
   });
-  const deleteLabelMutation = trpc.labels.delete.useMutation({
+  const deleteLabelMutation = (trpc.labels.delete as any).useMutation({
     onSuccess: () => {
       utils.labels.list.invalidate({ cardId });
       toast.success("Etiqueta removida");
     },
   });
-  const addChecklistMutation = trpc.checklists.add.useMutation({
+  const addChecklistMutation = (trpc.checklists.add as any).useMutation({
     onSuccess: () => {
       utils.checklists.list.invalidate({ cardId });
       toast.success("Item de checklist adicionado");
     },
   });
-  const updateChecklistMutation = trpc.checklists.update.useMutation({
+  const updateChecklistMutation = (trpc.checklists.update as any).useMutation({
     onSuccess: () => {
       utils.checklists.list.invalidate({ cardId });
     },
   });
-  const deleteChecklistMutation = trpc.checklists.delete.useMutation({
+  const deleteChecklistMutation = (trpc.checklists.delete as any).useMutation({
     onSuccess: () => {
       utils.checklists.list.invalidate({ cardId });
       toast.success("Item de checklist removido");
     },
   });
-  const addCustomFieldMutation = trpc.customFields.add.useMutation({
+  const addCustomFieldMutation = (trpc.customFields.add as any).useMutation({
     onSuccess: () => {
       utils.customFields.list.invalidate({ cardId });
       toast.success("Campo personalizado adicionado");
     },
   });
-  const deleteCustomFieldMutation = trpc.customFields.delete.useMutation({
+  const deleteCustomFieldMutation = (trpc.customFields.delete as any).useMutation({
     onSuccess: () => {
       utils.customFields.list.invalidate({ cardId });
       toast.success("Campo personalizado removido");
     },
   });
-  const upsertDatesMutation = trpc.projectDates.upsert.useMutation({
+  const upsertDatesMutation = (trpc.projectDates.upsert as any).useMutation({
     onSuccess: () => {
       utils.projectDates.get.invalidate({ cardId });
       toast.success("Datas atualizadas");
     },
   });
-  const updateCardMutation = trpc.cards.update.useMutation({
+  const updateCardMutation = (trpc.cards.update as any).useMutation({
     onSuccess: () => {
       utils.cards.getByList.invalidate();
       toast.success("Descrição atualizada");
@@ -258,7 +258,7 @@ export default function CardDetailModal({
                   <p className="text-muted-foreground text-sm">Nenhuma etiqueta adicionada</p>
                 ) : (
                   <div className="flex flex-wrap gap-2">
-                    {labels.map((label) => (
+                    {labels.map((label: any) => (
                       <div
                         key={label.id}
                         className="flex items-center gap-2 px-3 py-1 rounded-full text-white text-sm"
@@ -307,7 +307,7 @@ export default function CardDetailModal({
                   <p className="text-muted-foreground text-sm">Nenhum item de checklist</p>
                 ) : (
                   <div className="space-y-2">
-                    {checklists.map((item) => (
+                    {checklists.map((item: any) => (
                       <div key={item.id} className="flex items-center gap-3 p-3 rounded-lg bg-muted border border-border">
                         <input
                           type="checkbox"
@@ -406,7 +406,7 @@ export default function CardDetailModal({
 
                 {customFields && customFields.length > 0 && (
                   <div className="space-y-2">
-                    {customFields.map((field) => (
+                    {customFields.map((field: any) => (
                       <div key={field.id} className="flex items-center justify-between p-3 rounded-lg bg-muted border border-border">
                         <div>
                           <p className="font-medium text-foreground">{field.fieldName}</p>

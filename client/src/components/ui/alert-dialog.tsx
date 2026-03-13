@@ -89,25 +89,39 @@ function AlertDialogFooter({
 
 function AlertDialogTitle({
   className,
+  children,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Title> & { className?: string }) {
+}: React.ComponentProps<typeof AlertDialogPrimitive.Title> & { 
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <AlertDialogPrimitive.Title
       className={cn("text-lg font-semibold", className)}
       {...props}
-    />
+      {...({} as any)}
+    >
+      {children}
+    </AlertDialogPrimitive.Title>
   );
 }
 
 function AlertDialogDescription({
   className,
+  children,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Description> & { className?: string }) {
+}: React.ComponentProps<typeof AlertDialogPrimitive.Description> & { 
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <AlertDialogPrimitive.Description
       className={cn("text-muted-foreground text-sm", className)}
       {...props}
-    />
+      {...({} as any)}
+    >
+      {children}
+    </AlertDialogPrimitive.Description>
   );
 }
 
@@ -119,6 +133,7 @@ function AlertDialogAction({
     <AlertDialogPrimitive.Action
       className={cn(buttonVariants(), className)}
       {...props}
+      {...({} as any)}
     />
   );
 }
@@ -131,6 +146,7 @@ function AlertDialogCancel({
     <AlertDialogPrimitive.Cancel
       className={cn(buttonVariants({ variant: "outline" }), className)}
       {...props}
+      {...({} as any)}
     />
   );
 }

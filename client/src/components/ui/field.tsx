@@ -105,7 +105,7 @@ function FieldContent({ className, ...props }: React.ComponentProps<"div">) {
 function FieldLabel({
   className,
   ...props
-}: React.ComponentProps<typeof Label>) {
+}: React.ComponentProps<typeof Label> & { className?: string }) {
   return (
     <Label
       className={cn(
@@ -115,6 +115,7 @@ function FieldLabel({
         className
       )}
       {...props}
+      {...({} as any)}
     />
   )
 }

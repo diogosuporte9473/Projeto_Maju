@@ -25,6 +25,7 @@ const ContextMenuSubTrigger = React.forwardRef<any, any>(
         className
       )}
       {...props}
+      {...({} as any)}
     >
       {children}
       <ChevronRightIcon className="ml-auto size-4" />
@@ -42,6 +43,7 @@ const ContextMenuSubContent = React.forwardRef<any, any>(
         className
       )}
       {...props}
+      {...({} as any)}
     />
   )
 );
@@ -57,6 +59,7 @@ const ContextMenuContent = React.forwardRef<any, any>(
           className
         )}
         {...props}
+        {...({} as any)}
       />
     </ContextMenuPrimitive.Portal>
   )
@@ -74,6 +77,7 @@ const ContextMenuItem = React.forwardRef<any, any>(
         className
       )}
       {...props}
+      {...({} as any)}
     />
   )
 );
@@ -89,9 +93,10 @@ const ContextMenuCheckboxItem = React.forwardRef<any, any>(
       )}
       checked={checked}
       {...props}
+      {...({} as any)}
     >
       <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
-        <ContextMenuPrimitive.ItemIndicator>
+        <ContextMenuPrimitive.ItemIndicator {...({} as any)}>
           <CheckIcon className="size-4" />
         </ContextMenuPrimitive.ItemIndicator>
       </span>
@@ -110,9 +115,10 @@ const ContextMenuRadioItem = React.forwardRef<any, any>(
         className
       )}
       {...props}
+      {...({} as any)}
     >
       <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
-        <ContextMenuPrimitive.ItemIndicator>
+        <ContextMenuPrimitive.ItemIndicator {...({} as any)}>
           <CircleIcon className="size-2 fill-current" />
         </ContextMenuPrimitive.ItemIndicator>
       </span>
@@ -132,6 +138,7 @@ const ContextMenuLabel = React.forwardRef<any, any>(
         className
       )}
       {...props}
+      {...({} as any)}
     />
   )
 );
@@ -143,6 +150,7 @@ const ContextMenuSeparator = React.forwardRef<any, any>(
       ref={ref}
       className={cn("bg-border -mx-1 my-1 h-px", className)}
       {...props}
+      {...({} as any)}
     />
   )
 );

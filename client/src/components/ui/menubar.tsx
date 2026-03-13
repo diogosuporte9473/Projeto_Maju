@@ -53,6 +53,7 @@ const MenubarSubTrigger = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof MenubarPrimitive.SubTrigger> & {
     inset?: boolean;
     className?: string;
+    children?: React.ReactNode;
   }
 >(({ className, inset, children, ...props }, ref) => (
   <MenubarPrimitive.SubTrigger
@@ -135,7 +136,11 @@ MenubarItem.displayName = MenubarPrimitive.Item.displayName
 
 const MenubarCheckboxItem = React.forwardRef<
   HTMLDivElement,
-  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.CheckboxItem> & { className?: string }
+  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.CheckboxItem> & { 
+    className?: string;
+    children?: React.ReactNode;
+    checked?: boolean;
+  }
 >(({ className, children, checked, ...props }, ref) => (
   <MenubarPrimitive.CheckboxItem
     ref={ref}
@@ -159,7 +164,10 @@ MenubarCheckboxItem.displayName = MenubarPrimitive.CheckboxItem.displayName
 
 const MenubarRadioItem = React.forwardRef<
   HTMLDivElement,
-  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.RadioItem> & { className?: string }
+  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.RadioItem> & { 
+    className?: string;
+    children?: React.ReactNode;
+  }
 >(({ className, children, ...props }, ref) => (
   <MenubarPrimitive.RadioItem
     ref={ref}
