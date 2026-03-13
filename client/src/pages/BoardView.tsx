@@ -1,4 +1,4 @@
-import { useRoute } from "wouter";
+import { useParams } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import TrelloDashboardLayout from "@/components/TrelloDashboardLayout";
@@ -19,7 +19,7 @@ import {
 import { DraggableCard } from "@/components/DraggableCard";
 
 export default function BoardView() {
-  const [, params] = useRoute("/board/:id");
+  const params = useParams<{ id: string }>();
   const boardId = params?.id ? parseInt(params.id) : null;
   const { user } = useAuth();
 
