@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 
 const Separator = React.forwardRef<
   HTMLDivElement,
-  React.ComponentPropsWithoutRef<typeof SeparatorPrimitive.Root>
+  React.ComponentPropsWithoutRef<typeof SeparatorPrimitive.Root> & { className?: string }
 >(
   (
     { className, orientation = "horizontal", decorative = true, ...props },
@@ -23,6 +23,7 @@ const Separator = React.forwardRef<
         className
       )}
       {...props}
+      {...({} as any)}
     />
   )
 )

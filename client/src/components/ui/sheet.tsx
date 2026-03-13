@@ -16,7 +16,7 @@ const SheetPortal = SheetPrimitive.Portal
 
 const SheetOverlay = React.forwardRef<
   HTMLDivElement,
-  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Overlay>
+  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Overlay> & { className?: string }
 >(({ className, ...props }, ref) => (
   <SheetPrimitive.Overlay
     className={cn(
@@ -25,6 +25,7 @@ const SheetOverlay = React.forwardRef<
     )}
     {...props}
     ref={ref}
+    {...({} as any)}
   />
 ))
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName
@@ -32,7 +33,8 @@ SheetOverlay.displayName = SheetPrimitive.Overlay.displayName
 const SheetContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content> & {
-    side?: "top" | "bottom" | "left" | "right"
+    side?: "top" | "bottom" | "left" | "right";
+    className?: string;
   }
 >(({ side = "right", className, children, ...props }, ref) => (
   <SheetPortal>
@@ -52,9 +54,10 @@ const SheetContent = React.forwardRef<
         className
       )}
       {...props}
+      {...({} as any)}
     >
       {children}
-      <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
+      <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary" {...({} as any)}>
         <X className="h-4 w-4" />
         <span className="sr-only">Close</span>
       </SheetPrimitive.Close>
@@ -93,25 +96,37 @@ SheetFooter.displayName = "SheetFooter"
 
 const SheetTitle = React.forwardRef<
   HTMLHeadingElement,
-  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Title>
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Title> & { 
+    className?: string;
+    children?: React.ReactNode;
+  }
+>(({ className, children, ...props }, ref) => (
   <SheetPrimitive.Title
     ref={ref}
     className={cn("text-lg font-semibold text-foreground", className)}
     {...props}
-  />
+    {...({} as any)}
+  >
+    {children}
+  </SheetPrimitive.Title>
 ))
 SheetTitle.displayName = SheetPrimitive.Title.displayName
 
 const SheetDescription = React.forwardRef<
   HTMLParagraphElement,
-  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Description>
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Description> & { 
+    className?: string;
+    children?: React.ReactNode;
+  }
+>(({ className, children, ...props }, ref) => (
   <SheetPrimitive.Description
     ref={ref}
     className={cn("text-sm text-muted-foreground", className)}
     {...props}
-  />
+    {...({} as any)}
+  >
+    {children}
+  </SheetPrimitive.Description>
 ))
 SheetDescription.displayName = SheetPrimitive.Description.displayName
 

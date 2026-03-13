@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils"
 
 const NavigationMenu = React.forwardRef<
   HTMLElement,
-  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Root>
+  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Root> & { className?: string }
 >(({ className, children, ...props }, ref) => (
   <NavigationMenuPrimitive.Root
     ref={ref}
@@ -18,6 +18,7 @@ const NavigationMenu = React.forwardRef<
       className
     )}
     {...props}
+    {...({} as any)}
   >
     {children}
     <NavigationMenuViewport />
@@ -27,7 +28,7 @@ NavigationMenu.displayName = NavigationMenuPrimitive.Root.displayName
 
 const NavigationMenuList = React.forwardRef<
   HTMLUListElement,
-  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.List>
+  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.List> & { className?: string }
 >(({ className, ...props }, ref) => (
   <NavigationMenuPrimitive.List
     ref={ref}
@@ -36,6 +37,7 @@ const NavigationMenuList = React.forwardRef<
       className
     )}
     {...props}
+    {...({} as any)}
   />
 ))
 NavigationMenuList.displayName = NavigationMenuPrimitive.List.displayName
@@ -48,12 +50,13 @@ const navigationMenuTriggerStyle = cva(
 
 const NavigationMenuTrigger = React.forwardRef<
   HTMLButtonElement,
-  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Trigger>
+  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Trigger> & { className?: string }
 >(({ className, children, ...props }, ref) => (
   <NavigationMenuPrimitive.Trigger
     ref={ref}
     className={cn(navigationMenuTriggerStyle(), "group", className)}
     {...props}
+    {...({} as any)}
   >
     {children}{" "}
     <ChevronDown
@@ -66,7 +69,7 @@ NavigationMenuTrigger.displayName = NavigationMenuPrimitive.Trigger.displayName
 
 const NavigationMenuContent = React.forwardRef<
   HTMLDivElement,
-  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Content>
+  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Content> & { className?: string }
 >(({ className, ...props }, ref) => (
   <NavigationMenuPrimitive.Content
     ref={ref}
@@ -75,6 +78,7 @@ const NavigationMenuContent = React.forwardRef<
       className
     )}
     {...props}
+    {...({} as any)}
   />
 ))
 NavigationMenuContent.displayName = NavigationMenuPrimitive.Content.displayName
@@ -83,7 +87,7 @@ const NavigationMenuLink = NavigationMenuPrimitive.Link
 
 const NavigationMenuViewport = React.forwardRef<
   HTMLDivElement,
-  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Viewport>
+  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Viewport> & { className?: string }
 >(({ className, ...props }, ref) => (
   <div className={cn("absolute left-0 top-full flex justify-center")}>
     <NavigationMenuPrimitive.Viewport
@@ -93,6 +97,7 @@ const NavigationMenuViewport = React.forwardRef<
       )}
       ref={ref}
       {...props}
+      {...({} as any)}
     />
   </div>
 ))
@@ -101,7 +106,7 @@ NavigationMenuViewport.displayName =
 
 const NavigationMenuIndicator = React.forwardRef<
   HTMLDivElement,
-  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Indicator>
+  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Indicator> & { className?: string }
 >(({ className, ...props }, ref) => (
   <NavigationMenuPrimitive.Indicator
     ref={ref}
@@ -110,6 +115,7 @@ const NavigationMenuIndicator = React.forwardRef<
       className
     )}
     {...props}
+    {...({} as any)}
   >
     <div className="relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm bg-border shadow-md" />
   </NavigationMenuPrimitive.Indicator>
