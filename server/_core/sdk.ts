@@ -1,70 +1,43 @@
-// @ts-nocheck
-import { createClient } from "@supabase/supabase-js";
-import { AXIOS_TIMEOUT_MS, COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
-import { ForbiddenError } from "@shared/_core/errors";
-import axios, { type AxiosInstance } from "axios";
-import type { Request } from "express";
-import type { User } from "../../drizzle/schema";
-import * as db from "../db";
-import { ENV } from "./env";
+import { ForbiddenError } from "../../shared/_core/errors.js";
+import type { User } from "../../drizzle/schema.js";
+import * as db from "../db.js";
+import { COOKIE_NAME } from "../../shared/const.js";
+import { jwtVerify } from "jose";
 
-const supabase = createClient(ENV.supabaseUrl, ENV.supabaseServiceKey);
-
-// Utility function
-const isNonEmptyString = (value: unknown): value is string =>
-  typeof value === "string" && value.length > 0;
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "your-secret-key");
 
 class SDKServer {
-  private readonly client: AxiosInstance;
-
-  constructor(client: AxiosInstance = axios.create()) {
-    this.client = client;
-  }
-
   async authenticateRequest(req: any): Promise<User> {
-    const authHeader = req.headers?.authorization;
-    const token = authHeader?.split(" ")[1];
-
-    if (!token) {
-      throw ForbiddenError("Missing authorization token");
+    // 1. Try Cookie Auth (JWT)
+    const token = req.cookies?.[COOKIE_NAME];
+    
+    if (token) {
+      try {
+        const { payload } = await jwtVerify(token, JWT_SECRET);
+        const userId = payload.sub ? parseInt(payload.sub) : null;
+        
+        if (userId) {
+          try {
+            const user = await db.getUserById(userId);
+            if (user) {
+              return user;
+            }
+          } catch (dbError) {
+            console.error("[Auth] Database error during authentication:", dbError);
+            throw dbError; // Repassa o erro do banco para ser capturado no context/router
+          }
+        }
+      } catch (e) {
+        if ((e as any).code === "ERR_JWT_EXPIRED" || (e as any).code === "ERR_JWS_INVALID") {
+          console.warn("[Auth] Invalid or expired JWT token");
+        } else {
+          console.error("[Auth] JWT verification error:", e);
+          throw e;
+        }
+      }
     }
 
-    try {
-      const { data: { user: supabaseUser }, error } = await (supabase.auth as any).getUser(token);
-
-      if (error || !supabaseUser) {
-        throw ForbiddenError("Invalid session");
-      }
-
-      const openId = supabaseUser.id;
-      const signedInAt = new Date();
-      let user = await db.getUserByOpenId(openId);
-
-      if (!user) {
-        await db.upsertUser({
-          openId,
-          name: supabaseUser.user_metadata?.full_name || supabaseUser.email?.split("@")[0] || "User",
-          email: supabaseUser.email ?? null,
-          loginMethod: "supabase",
-          lastSignedIn: signedInAt,
-        });
-        user = await db.getUserByOpenId(openId);
-      } else {
-        await db.upsertUser({
-          openId,
-          lastSignedIn: signedInAt,
-        });
-      }
-
-      if (!user) {
-        throw ForbiddenError("User not found after sync");
-      }
-
-      return user;
-    } catch (error) {
-      console.error("[Auth] Supabase verification failed", error);
-      throw ForbiddenError("Authentication failed");
-    }
+    throw ForbiddenError("Invalid session");
   }
 }
 

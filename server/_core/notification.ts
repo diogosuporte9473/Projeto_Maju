@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { ENV } from "./env";
+import { ENV } from "./env.js";
 
 export type NotificationPayload = {
   title: string;
@@ -57,6 +57,12 @@ const validatePayload = (input: NotificationPayload): NotificationPayload => {
   return { title, content };
 };
 
+/**
+ * Dispatches a project-owner notification through the Manus Notification Service.
+ * Returns `true` if the request was accepted, `false` when the upstream service
+ * cannot be reached (callers can fall back to email/slack). Validation errors
+ * bubble up as TRPC errors so callers can fix the payload.
+ */
 export async function notifyOwner(
   payload: NotificationPayload
 ): Promise<boolean> {

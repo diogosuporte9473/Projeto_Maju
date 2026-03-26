@@ -1,61 +1,52 @@
+import { jsxLocPlugin } from "@builder.io/vite-plugin-jsx-loc";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import path from "node:path";
-import { defineConfig, loadEnv } from "vite";
 import { fileURLToPath } from "node:url";
+import { defineConfig } from "vite";
+import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-export default defineConfig(({ mode }) => {
-  // Carrega variáveis de ambiente para uso no config, se necessário
-  const env = loadEnv(mode, process.cwd(), '');
+const plugins = [
+  react(),
+  tailwindcss(),
+  jsxLocPlugin(),
+  vitePluginManusRuntime()
+];
 
-  return {
-    root: '.', // Força raiz como o diretório atual
-    base: '/', // Importante para Vercel
-    plugins: [
-      react(),
-      tailwindcss(),
+export default defineConfig({
+  plugins,
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "client", "src"),
+      "@shared": path.resolve(__dirname, "shared"),
+      "@assets": path.resolve(__dirname, "attached_assets"),
+    },
+  },
+  envDir: path.resolve(__dirname),
+  root: path.resolve(__dirname, "client"),
+  publicDir: path.resolve(__dirname, "client", "public"),
+  build: {
+    outDir: path.resolve(__dirname, "dist"),
+    emptyOutDir: true,
+    chunkSizeWarningLimit: 10000,
+  },
+  server: {
+    host: true,
+    allowedHosts: [
+      ".manuspre.computer",
+      ".manus.computer",
+      ".manus-asia.computer",
+      ".manuscomputer.ai",
+      ".manusvm.computer",
+      "localhost",
+      "127.0.0.1",
     ],
-    resolve: {
-      alias: {
-        "@": path.resolve(__dirname, "./client/src"),
-        "@shared": path.resolve(__dirname, "./shared"),
-      },
+    fs: {
+      strict: true,
+      deny: ["**/.*"],
     },
-    // Define fallbacks inteligentes: tenta VITE_, depois NEXT_PUBLIC_, depois a var pura
-    define: {
-      'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(
-        env.VITE_SUPABASE_URL || env.NEXT_PUBLIC_SUPABASE_URL || env.SUPABASE_URL || ''
-      ),
-      'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(
-        env.VITE_SUPABASE_ANON_KEY || env.NEXT_PUBLIC_SUPABASE_ANON_KEY || env.SUPABASE_ANON_KEY || ''
-      ),
-      'import.meta.env.VITE_APP_ENV': JSON.stringify(env.VITE_APP_ENV || 'production'),
-      'import.meta.env.VITE_API_URL': JSON.stringify(env.VITE_API_URL || ''),
-    },
-    build: {
-      outDir: "dist",
-      emptyOutDir: true,
-      rollupOptions: {
-        // Ativa logs detalhados solicitados para depuração na Vercel
-        onwarn(warning: any, warn: any) {
-          console.warn('=== ROLLUP WARNING DETALHADO ===');
-          console.warn('Código do warning:', warning.code);
-          console.warn('Mensagem:', warning.message);
-          if (warning.loc) {
-            console.warn(`Arquivo: ${warning.loc.file || 'desconhecido'}`);
-            console.warn(`Linha: ${warning.loc.line}:${warning.loc.column}`);
-          }
-          if (warning.exporter) console.warn('Exporter:', warning.exporter);
-          if (warning.importer) console.warn('Importer:', warning.importer);
-          console.warn('===========================');
-          warn(warning);
-        },
-      },
-    },
-    server: {
-      open: true,
-    },
-  };
+  },
 });

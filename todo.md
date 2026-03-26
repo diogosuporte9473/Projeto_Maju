@@ -71,9 +71,9 @@
 - [ ] Testes de espelhamento de cartões
 
 ## Fase 12: Deploy
-- [x] Configurar GitHub repository
-- [x] Configurar Vercel deployment
-- [x] Variáveis de ambiente
+- [ ] Configurar GitHub repository
+- [ ] Configurar Vercel deployment
+- [ ] Variáveis de ambiente
 - [ ] Documentação de setup
 
 ## Fase 13: Página de Apresentação
@@ -118,3 +118,18 @@
 - [x] Implementar interface para adicionar usuários
 - [x] Implementar interface para gerenciar permissões
 - [x] Testar e validar funcionalidades
+
+## Fase 19: Corrigir Abertura de Cartões
+- [x] Debugar erro de abertura do modal
+- [x] Corrigir componente DraggableCard ou CardDetailModal
+- [x] Testar abertura do modal
+- [x] Validar funcionalidades do modal
+
+
+## Fase 20: Migração para Supabase
+- [x] Configurar Supabase e obter credenciais
+- [x] Atualizar variáveis de ambiente para Supabase
+- [x] Testar conexão com Supabase localmente
+- [ ] Fazer push para GitHub
+- [ ] Configurar deploy no Vercel com Supabase
+- [ ] Validar deploy em produção
