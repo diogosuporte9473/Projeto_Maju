@@ -2,13 +2,12 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
-import ErrorBoundary from "@/components/ErrorBoundary";
-import { ThemeProvider } from "@/contexts/ThemeContext";
-import { AuthProvider } from "@/contexts/AuthContext";
-import Home from "@/pages/Home";
-import Settings from "@/pages/Settings";
-import BoardView from "@/pages/BoardView";
-import Admin from "@/pages/Admin";
+import ErrorBoundary from "./components/ErrorBoundary";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import Home from "./pages/Home";
+import Settings from "./pages/Settings";
+import BoardView from "./pages/BoardView";
+import Admin from "./pages/Admin";
 
 function Router() {
   return (
@@ -37,10 +36,8 @@ function App() {
         // switchable
       >
         <TooltipProvider>
-          <AuthProvider>
-            <Toaster />
-            <Router />
-          </AuthProvider>
+          <Toaster />
+          <Router />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

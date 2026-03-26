@@ -2,14 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { Loader2, Send, User, Sparkles } from "lucide-react";
+import { Loader2, Send, User, Sparkles, Globe, Minimize2 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
-// Import Streamdown if it exists, or just use a fallback
-// For now, let's just use a basic markdown-like renderer or plain text
-// since Streamdown might not be installed yet.
-const Streamdown = ({ children }: { children: string }) => {
-  return <div className="whitespace-pre-wrap">{children}</div>;
-};
+import { Streamdown } from "streamdown";
+import { Toggle } from "@/components/ui/toggle";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 /**
  * Message type matching server-side LLM Message interface
@@ -30,7 +27,7 @@ export type AIChatBoxProps = {
    * Callback when user sends a message.
    * Typically you'll call a tRPC mutation here to invoke the LLM.
    */
-  onSendMessage: (content: string) => void;
+  onSendMessage: (content: string, options?: { useWebSearch?: boolean; shortResponse?: boolean }) => void;
 
   /**
    * Whether the AI is currently generating a response
@@ -64,6 +61,57 @@ export type AIChatBoxProps = {
   suggestedPrompts?: string[];
 };
 
+/**
+ * A ready-to-use AI chat box component that integrates with the LLM system.
+ *
+ * Features:
+ * - Matches server-side Message interface for seamless integration
+ * - Markdown rendering with Streamdown
+ * - Auto-scrolls to latest message
+ * - Loading states
+ * - Uses global theme colors from index.css
+ *
+ * @example
+ * ```tsx
+ * const ChatPage = () => {
+ *   const [messages, setMessages] = useState<Message[]>([
+ *     { role: "system", content: "You are a helpful assistant." }
+ *   ]);
+ *
+ *   const chatMutation = trpc.ai.chat.useMutation({
+ *     onSuccess: (response) => {
+ *       // Assuming your tRPC endpoint returns the AI response as a string
+ *       setMessages(prev => [...prev, {
+ *         role: "assistant",
+ *         content: response
+ *       }]);
+ *     },
+ *     onError: (error) => {
+ *       console.error("Chat error:", error);
+ *       // Optionally show error message to user
+ *     }
+ *   });
+ *
+ *   const handleSend = (content: string, options?: any) => {
+ *     const newMessages = [...messages, { role: "user", content }];
+ *     setMessages(newMessages);
+ *     chatMutation.mutate({ messages: newMessages, ...options });
+ *   };
+ *
+ *   return (
+ *     <AIChatBox
+ *       messages={messages}
+ *       onSendMessage={handleSend}
+ *       isLoading={chatMutation.isPending}
+ *       suggestedPrompts={[
+ *         "Explain quantum computing",
+ *         "Write a hello world in Python"
+ *       ]}
+ *     />
+ *   );
+ * };
+ * ```
+ */
 export function AIChatBox({
   messages,
   onSendMessage,
@@ -71,10 +119,12 @@ export function AIChatBox({
   placeholder = "Type your message...",
   className,
   height = "600px",
-  emptyStateMessage = "Start a conversation with AI",
+  emptyStateMessage = "Ola sou assistente Virtual D. como posso Ajudar.",
   suggestedPrompts,
 }: AIChatBoxProps) {
   const [input, setInput] = useState("");
+  const [useWebSearch, setUseWebSearch] = useState(false);
+  const [shortResponse, setShortResponse] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputAreaRef = useRef<HTMLFormElement>(null);
@@ -92,6 +142,10 @@ export function AIChatBox({
       const inputHeight = inputAreaRef.current.offsetHeight;
       const scrollAreaHeight = containerHeight - inputHeight;
 
+      // Reserve space for:
+      // - padding (p-4 = 32px top+bottom)
+      // - user message: 40px (item height) + 16px (margin-top from space-y-4) = 56px
+      // Note: margin-bottom is not counted because it naturally pushes the assistant message down
       const userMessageReservedHeight = 56;
       const calculatedHeight = scrollAreaHeight - 32 - userMessageReservedHeight;
 
@@ -99,6 +153,7 @@ export function AIChatBox({
     }
   }, []);
 
+  // Scroll to bottom helper function with smooth animation
   const scrollToBottom = () => {
     const viewport = scrollAreaRef.current?.querySelector(
       '[data-radix-scroll-area-viewport]'
@@ -119,9 +174,13 @@ export function AIChatBox({
     const trimmedInput = input.trim();
     if (!trimmedInput || isLoading) return;
 
-    onSendMessage(trimmedInput);
+    onSendMessage(trimmedInput, { useWebSearch, shortResponse });
     setInput("");
+
+    // Scroll immediately after sending
     scrollToBottom();
+
+    // Keep focus on input
     textareaRef.current?.focus();
   };
 
@@ -141,6 +200,7 @@ export function AIChatBox({
       )}
       style={{ height }}
     >
+      {/* Messages Area */}
       <div ref={scrollAreaRef} className="flex-1 overflow-hidden">
         {displayMessages.length === 0 ? (
           <div className="flex h-full flex-col p-4">
@@ -155,7 +215,7 @@ export function AIChatBox({
                   {suggestedPrompts.map((prompt, index) => (
                     <button
                       key={index}
-                      onClick={() => onSendMessage(prompt)}
+                      onClick={() => onSendMessage(prompt, { useWebSearch, shortResponse })}
                       disabled={isLoading}
                       className="rounded-lg border border-border bg-card px-4 py-2 text-sm transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
                     >
@@ -170,6 +230,7 @@ export function AIChatBox({
           <ScrollArea className="h-full">
             <div className="flex flex-col space-y-4 p-4">
               {displayMessages.map((message, index) => {
+                // Apply min-height to last message only if NOT loading (when loading, the loading indicator gets it)
                 const isLastMessage = index === displayMessages.length - 1;
                 const shouldApplyMinHeight =
                   isLastMessage && !isLoading && minHeightForLastMessage > 0;
@@ -245,33 +306,73 @@ export function AIChatBox({
         )}
       </div>
 
-      <form
-        ref={inputAreaRef}
-        onSubmit={handleSubmit}
-        className="flex gap-2 p-4 border-t bg-background/50 items-end"
-      >
-        <Textarea
-          ref={textareaRef}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={placeholder}
-          className="flex-1 max-h-32 resize-none min-h-9"
-          rows={1}
-        />
-        <Button
-          type="submit"
-          size="icon"
-          disabled={!input.trim() || isLoading}
-          className="shrink-0 h-[38px] w-[38px]"
+      {/* Input Area */}
+      <div className="border-t bg-background/50 p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Toggle
+                  size="sm"
+                  pressed={useWebSearch}
+                  onPressedChange={setUseWebSearch}
+                  className="h-8 w-8 p-0 data-[state=on]:bg-primary/20 data-[state=on]:text-primary"
+                >
+                  <Globe className="h-4 w-4" />
+                </Toggle>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Pesquisar na Web</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Toggle
+                  size="sm"
+                  pressed={shortResponse}
+                  onPressedChange={setShortResponse}
+                  className="h-8 w-8 p-0 data-[state=on]:bg-primary/20 data-[state=on]:text-primary"
+                >
+                  <Minimize2 className="h-4 w-4" />
+                </Toggle>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Resposta Curta</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <div className="flex-1" />
+        </div>
+
+        <form
+          ref={inputAreaRef}
+          onSubmit={handleSubmit}
+          className="flex gap-2 items-end"
         >
-          {isLoading ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <Send className="size-4" />
-          )}
-        </Button>
-      </form>
+          <Textarea
+            ref={textareaRef}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder}
+            className="flex-1 max-h-32 resize-none min-h-9"
+            rows={1}
+          />
+          <Button
+            type="submit"
+            size="icon"
+            disabled={!input.trim() || isLoading}
+            className="shrink-0 h-[38px] w-[38px]"
+          >
+            {isLoading ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Send className="size-4" />
+            )}
+          </Button>
+        </form>
+      </div>
     </div>
   );
 }

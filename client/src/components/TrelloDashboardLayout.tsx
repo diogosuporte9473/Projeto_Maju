@@ -1,4 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useRealtimeSync } from "@/_core/hooks/useRealtimeSync";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -12,15 +13,14 @@ interface TrelloDashboardLayoutProps {
 
 export default function TrelloDashboardLayout({ children }: TrelloDashboardLayoutProps) {
   const { user, logout } = useAuth();
-  const utils = trpc.useUtils();
-  const { data: boards, isLoading } = (trpc.boards.list as any).useQuery();
+  
+  // Ativa sincronização global para a barra lateral (boards)
+  useRealtimeSync();
+
+  const { data: boards, isLoading } = trpc.boards.list.useQuery();
   const [showNewBoard, setShowNewBoard] = useState(false);
   const [newBoardName, setNewBoardName] = useState("");
-  const createBoardMutation = (trpc.boards.create as any).useMutation({
-    onSuccess: () => {
-      utils.boards.list.invalidate();
-    },
-  });
+  const createBoardMutation = trpc.boards.create.useMutation();
 
   const handleCreateBoard = async () => {
     if (!newBoardName.trim()) return;
@@ -42,12 +42,14 @@ export default function TrelloDashboardLayout({ children }: TrelloDashboardLayou
     <div className="flex h-screen bg-background">
       <aside className="w-64 bg-primary text-primary-foreground border-r border-border flex flex-col">
         <div className="p-6 border-b border-primary-foreground/10">
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center">
-              <span className="text-primary font-bold">M</span>
-            </div>
-            Maju Tasks
-          </h1>
+          <Link href="/">
+            <h1 className="text-2xl font-bold flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+              <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center">
+                <span className="text-primary font-bold">M</span>
+              </div>
+              Maju Tasks
+            </h1>
+          </Link>
           <p className="text-sm text-primary-foreground/70 mt-1">Task Manager</p>
         </div>
 
@@ -60,7 +62,7 @@ export default function TrelloDashboardLayout({ children }: TrelloDashboardLayou
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-sm truncate">{user?.name || "User"}</p>
-              <p className="text-xs text-primary-foreground/70 truncate">{user?.email}</p>
+              <p className="text-xs text-primary-foreground/70 truncate">{user?.username}</p>
             </div>
           </div>
         </div>
@@ -79,7 +81,7 @@ export default function TrelloDashboardLayout({ children }: TrelloDashboardLayou
               </div>
             ) : boards && boards.length > 0 ? (
               <div className="space-y-2">
-                {boards.map((board: any) => (
+                {boards.map((board) => (
                   <Link key={board.id} href={`/board/${board.id}`} className="block p-3 rounded-lg hover:bg-primary-foreground/10 transition-colors text-sm font-medium">
                     <div className="flex items-center gap-2">
                       <div

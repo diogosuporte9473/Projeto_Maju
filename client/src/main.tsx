@@ -1,12 +1,11 @@
 // @ts-nocheck
 import { trpc } from "@/lib/trpc";
-import { UNAUTHED_ERR_MSG } from '@shared/const';
+import { UNAUTHED_ERR_MSG } from '../../shared/const';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { httpBatchLink, loggerLink, TRPCClientError } from "@trpc/client";
+import { httpBatchLink, TRPCClientError } from "@trpc/client";
 import { createRoot } from "react-dom/client";
 import superjson from "superjson";
 import App from "@/App";
-import { supabase } from "@/lib/supabase";
 import "./index.css";
 
 const queryClient = new QueryClient();
@@ -16,11 +15,7 @@ const redirectToLoginIfUnauthorized = (error: unknown) => {
   if (typeof window === "undefined") return;
 
   const isUnauthorized = error.message === UNAUTHED_ERR_MSG;
-
   if (!isUnauthorized) return;
-  
-  // With Supabase Auth, we don't necessarily need to redirect, 
-  // the useAuth hook will detect the session loss.
 };
 
 queryClient.getQueryCache().subscribe((event: any) => {
@@ -44,20 +39,28 @@ const trpcClient = trpc.createClient({
     httpBatchLink({
       url: "/api/trpc",
       transformer: superjson,
-      async headers() {
-        const { data: { session } } = await (supabase.auth as any).getSession();
-        if (session?.access_token) {
-          return {
-            Authorization: `Bearer ${session.access_token}`,
-          };
-        }
-        return {};
-      },
-      fetch(input, init) {
-        return globalThis.fetch(input, {
+      async fetch(input, init) {
+        const response = await globalThis.fetch(input, {
           ...(init ?? {}),
           credentials: "include",
         });
+
+        // Se o servidor retornar HTML (começa com <), provavelmente é um erro 500 da Vercel
+        // Vamos interceptar para evitar o erro de JSON "Unexpected token A"
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("text/html")) {
+          const text = await response.text();
+          console.error("❌ Servidor retornou HTML em vez de JSON. Possível erro 500 ou queda do backend.");
+          
+          // Se for erro de Rollup missing module, vamos dar uma mensagem mais específica
+          if (text.includes("Cannot find module '@rollup/rollup-linux-x64-gnu'")) {
+            throw new TRPCClientError("Erro de dependência nativa no servidor: Rollup binário faltando.");
+          }
+          
+          throw new TRPCClientError("Erro no servidor (Backend retornou HTML). Verifique os logs da Vercel.");
+        }
+
+        return response;
       },
     }),
   ],
